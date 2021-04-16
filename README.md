@@ -421,6 +421,10 @@ For simplicity, there is no redundancy in any of the tiers.
 
 7. The data migration will begin. Select the **Refresh** button and watch the migration progress, until it shows as **Completed**.
 
+8.  In the Azure portal, navigate to the **RG-MAE-SmartHotelDB** resource group, and then to the database server. Under **Security**, select **Private endpoint connections**.
+
+9.  Select the **SmartHotel-DB-for-DMS** endpoint added earlier, and select **Remove**, followed by **Yes**.
+
 ## Exercise #04 - Application and Web Server Migration (60 minutes)
 
 1. In the Azure portal's left navigation, select **+ Create a resource**, then search for and select **Storage account**, followed by **Create**.
@@ -433,7 +437,7 @@ For simplicity, there is no redundancy in any of the tiers.
   
     - Storage account name: **samaesmarthotel\[unique number\]**
   
-    - Location: **Brazil South**
+    - Location: **East US 2**
   
     - Account kind: **Storage (general purpose v2)**.
   
@@ -441,16 +445,22 @@ For simplicity, there is no redundancy in any of the tiers.
 
 3. Select **Review + create**, then select **Create**.
 
-1. In the Azure portal's left navigation, select **All services**, then select **Networking**, followed by **Virtual network**.
+1. In the Azure portal's left navigation, select **+ Create a resource**, then select **Networking**, followed by **Virtual network**.
 
-1. Select **VNET-MAE-Hub**, and select **Address space** under **Settings** create a new address space, enter the following values:
+2. In the **Create virtual network** blade, enter the following values:
 
-    - Address space: **192.168.0.0/16**.
+    - Subscription: **Select your Azure subscription**.
   
-1. On the **Address space**, select **Save**.
+    - Resource group: **RG-MAE-SmartHotel**
+  
+    - Name: **VNET-MAE-SmartHotel**
+  
+    - Region: **IMPORTANT: Select the same location as your Azure SQL Database**.
+  
+3. Select **Next: IP Addresses >**, and enter the following configuration. Then select **Review + create**, then **Create**.
 
-3. Select **Subnets**, and enter the following configuration..
-    
+    - IPv4 address space: **192.168.0.0/24** 
+  
     - First subnet: Select **Add subnet** and enter the following then select **Add**
 
         - Subnet name: **SmartHotel**
@@ -462,8 +472,40 @@ For simplicity, there is no redundancy in any of the tiers.
         - Subnet name: **SmartHotelDB**
    
         - Address range: **192.168.0.128/25**
-   
-1. **Wait** for the deployment to complete.
+
+4. Navigate to the **RG-MAE-SmartHotelDB** resource group, and then to the database server. Under **Security**, select **Private endpoint connections**, then select **+ Private endpoint**.
+
+5. On the **Basics** tab, enter the following configuration then select **Next: Resource**:
+
+    - Resource group: **RG-MAE-SmartHotelDB**
+  
+    - Name: **SmartHotel-DB-Endpoint**
+  
+    - Region: **Select the same location as the VNET**.
+
+6.  On the **Resource** tab, enter the following configuration then select **Next: Configuration**:
+
+    - Connection method: **Connect to an Azure resource in my directory**.
+  
+    - Subscription: **Select your subscription**.
+  
+    - Resource type: **Microsoft.Sql/servers**
+  
+    - Resource: **Your SQL database server**.
+  
+    - Target sub-resource: **sqlServer**
+ 
+7.  On the **Configuration** tab, enter the following configuration then select **Review + Create** then **Create**:
+
+    - Virtual network: **VNET-MAE-SmartHotel**
+  
+    - Subnet: **SmartHotelDB (192.168.0.128/25)**
+  
+    - Integrate with private DNS zone: **Yes**
+  
+    - Private DNS zone: (default) **privatelink.database.windows.net**
+
+8. **Wait** for the deployment to complete. Open the Private Endpoint blade, and note that the FQDN for the endpoint is listed as **\<your database\>.database.windows.net**, with an internal IP address **192.168.0.132**.  
 
 1. Return to the **Azure Migrate** blade in the Azure Portal, and select **Servers** under **Migration goals** on the left. Under **Migration Tools**, select **Discover**.
 

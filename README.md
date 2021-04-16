@@ -309,8 +309,8 @@ For simplicity, there is no redundancy in any of the tiers.
 7. Repeat these steps to configure the private IP address for the other VMs.
  
     - For **smarthotelweb2** use private IP address **192.168.0.5**
- 
-    - For **smarthotelsql1** use private IP address **192.168.0.132**
+
+    - For **smarthotelsql1** use private IP address **192.168.0.6**
 
     - For **UbuntuWAF** use private IP address **192.168.0.8**
   
@@ -330,13 +330,13 @@ For simplicity, there is no redundancy in any of the tiers.
 
 1. The application tier machine **smarthotelweb2** is configured to connect to the application database running on the **smarthotelsql** machine.
 
-> **Note**: You do not need to update any configuration files on **smarthotelweb1** or the **UbuntuWAF** VMs, since the migration has preserved the private IP addresses of all virtual machines they connect with.
+> **Note**: You do not need to update any configuration files on **smarthotelweb1**, **smarthotelweb2** or the **UbuntuWAF** VMs, since the migration has preserved the private IP addresses of all virtual machines they connect with.
 
 1. Navigate to the **UbuntuWAF** VM blade, select **Networking** under **Settings** on the left, then select the network interface.
 
 2. Select **IP configuration** under **Settings** on the left, then select the IP configuration listed.
 
-3. Set the **Public IP address** to **Associate**, and create a new public IP address named **PI-UbuntuWAF**. Choose a **Basic** tier IP address with **Dynamic** assignment. **Save** your changes.
+3. Set the **Public IP address** to **Associate**, and create a new public IP address named **UbuntuWAF-PI**. Choose a **Basic** tier IP address with **Dynamic** assignment. **Save** your changes.
 
 4. Return to the **UbuntuWAF** VM overview blade and copy the **Public IP address** value.
 

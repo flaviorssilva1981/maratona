@@ -31,7 +31,7 @@ Hands-on Lab
 
     > **Note:** If you are using an Azure Pass subscription, you may not meet the vCPU quotas above. In this case, you can still complete the lab.
 
-## Deploy the on-premises environment
+## Deploy the On-premises environment
 
 1. Deploy the template **SmartHotelHost.json** to a new resource group. This template deploys a virtual machine running nested Hyper-V, with 4 nested VMs. This comprises the 'on-premises' environment which you will assess and migrate during this lab.
 
@@ -77,7 +77,7 @@ For simplicity, there is no redundancy in any of the tiers.
 
 2. Select **All services** in the portal's left navigation, then search for and select **Azure Migrate** to open the Azure Migrate Overview blade.
 
-3. Select **Assess and migrate servers**, then **Create project**.  Select your subscription and create a new resource group named **RG-MAE-SmartHotel**. Enter **SmartHotelMigration** as the Migrate project name, and choose a geography close to you to store the migration assessment data. Then select **Create**.
+3. Select **Assess and migrate servers**, then **Create project**. Select your subscription and create a new resource group named **RG-MAE-SmartHotel**. Enter **SmartHotelMigration** as the Migrate project name, and choose a geography close to you to store the migration assessment data. Then select **Create**.
 
 6. The Azure Migrate deployment will start. Once it has completed, you should see the **Azure Migrate: Server Assessment** and **Azure Migrate: Server Migration** panels for the current migration project.
 
@@ -170,7 +170,7 @@ For simplicity, there is no redundancy in any of the tiers.
 
 3. Under **Assessment properties**, select **View all**.
 
-4. The **Assessment properties** blade allows you to tailor many of the settings used when making a migration assessment report. Take a few moments to explore the wide range of assessment properties. Hover over the information icons to see more details on each setting. Choose any settings you like, then select **Save**. (You have to make a change for the Save button to be enabled; if you don't want to make any changes, just close the blade.)
+4. The **Assessment properties** blade allows you to tailor many of the settings used when making a migration assessment report. Take a few moments to explore the wide range of assessment properties. Hover over the information icons to see more details on each setting. Choose any settings you like, then select **Save**.
  
 5. Select **Next** to move to the **Select machines to assess** tab. Choose **Create New** and enter the group name **SmartHotel VMs**. Select the **smarthotelsql1**, **smarthotelweb1**, **smarthotelweb2** and **UbuntuWAF** VMs.
 
@@ -190,9 +190,7 @@ For simplicity, there is no redundancy in any of the tiers.
 
 12. Return to the portal browser tab to see details of the issue. Note the recommendation to migrate the VM using **Azure Migrate: Server Migration**.
 
-13. Take a few minutes to explore other aspects of the migration assessment.
-
-## Exercise #04 - Server Migration (60 minutes)
+## Exercise #03 - Server Migration (60 minutes)
 
 1. In the Azure portal's left navigation, select **+ Create a resource**, then search for and select **Storage account**, followed by **Create**.
 
@@ -200,7 +198,7 @@ For simplicity, there is no redundancy in any of the tiers.
 
     - Subscription: **Select your Azure subscription**.
   
-    - Resource group: (create new) **RG-MAE-SmartHotel**
+    - Resource group: **RG-MAE-SmartHotel**
   
     - Storage account name: **samaesmarthotel\[unique number\]**
   
@@ -280,7 +278,7 @@ For simplicity, there is no redundancy in any of the tiers.
 
 4. The **Virtual machines** tab should now show the virtual machines included in the assessment. Select the **UbuntuWAF**, **smarthotelweb1** and **smarthotelweb2** virtual machines, then select **Next**.
 
-5. In the **Target settings** tab, select your subscription and the existing **RG-SmartHotel** resource group. Under **Replication storage account** select the **samaesmarthotelmigrate...** storage account and under **Virtual Network** select **VNET-MAE-Hub**. Under **Subnet** select **SmartHotel**. Select **Next**.
+5. In the **Target settings** tab, select your subscription and the existing **RG-SmartHotel** resource group. Under **Replication storage account** select the **samaesmarthotelmigrate...** storage account and under **Virtual Network** select **VNET-MAE-SmartHotel**. Under **Subnet** select **SmartHotel**. Select **Next**.
 
     > **Note:** For simplicity, in this lab you will not configure the migrated VMs for high availability, since each application tier is implemented using a single VM.
 
@@ -312,8 +310,10 @@ For simplicity, there is no redundancy in any of the tiers.
  
     - For **smarthotelweb2** use private IP address **192.168.0.5**
  
-    - For **UbuntuWAF** use private IP address **192.168.0.8**
+    - For **smarthotelsql1** use private IP address **192.168.0.132**
 
+    - For **UbuntuWAF** use private IP address **192.168.0.8**
+  
 1. Return to the **Azure Migrate: Server Migration** overview blade. Under **Step 3: Migrate**, select **Migrate**.
 
 2. On the **Migrate** blade, select the 4 virtual machines then select **Migrate** to start the migration process.

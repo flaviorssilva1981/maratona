@@ -1,9 +1,9 @@
-# Workshop Day Migracao Datacenter para Nuvem
+# Maratona Azure Expert - Migração de ambiente para o Azure
 
 Hands-on Lab
 
-## Workshop Day
-## Exercise #01 - Deploy the On-premises environment (30 minutes)
+## Maratona Azure Expert
+## Exercise #01 - Deploy the On-premises environment (30~60 minutes)
 
 ## Requirements
 
@@ -35,7 +35,7 @@ Hands-on Lab
 
 1. Deploy the template **SmartHotelHost.json** to a new resource group. This template deploys a virtual machine running nested Hyper-V, with 4 nested VMs. This comprises the 'on-premises' environment which you will assess and migrate during this lab.
 
-    You can deploy the template by selecting the 'Deploy to Azure' button below. You will need to create a new resource group **RG-SmartHotel-Onpremises**. You will also need to select a location **East US 2** close to you to deploy the template to. Then choose **Review + create** followed by **Create**. 
+    You can deploy the template by selecting the 'Deploy to Azure' button below. You will need to create a new resource group **RG-MAE-Onpremises**. You will also need to select a location **East US 2** close to you to deploy the template to. Then choose **Review + create** followed by **Create**. 
 
     <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fcloudworkshop.blob.core.windows.net%2Fline-of-business-application-migration%2Fsept-2020%2FSmartHotelHost.json" target="_blank">![Button to deploy the SmartHotelHost template to Azure.](/AllFiles/Images/deploy-to-azure.png)</a>
 
@@ -71,13 +71,13 @@ For simplicity, there is no redundancy in any of the tiers.
 
 ![A slide shows the on-premises SmartHotel application architecture.](/AllFiles/Images/overview.png)
 
-## Lab #02 - Discover and assess the on-premises environment (30 minutes)
+## Exercise #02 - Discover and assess the on-premises environment (30 minutes)
 
 1. Open your browser, navigate to **https://portal.azure.com**, and log in with your Azure subscription credentials.
 
 2. Select **All services** in the portal's left navigation, then search for and select **Azure Migrate** to open the Azure Migrate Overview blade.
 
-3. Select **Assess and migrate servers**, then **Create project**.  Select your subscription and create a new resource group named **RG-SmartHotel**. Enter **SmartHotelMigration** as the Migrate project name, and choose a geography close to you to store the migration assessment data. Then select **Create**.
+3. Select **Assess and migrate servers**, then **Create project**.  Select your subscription and create a new resource group named **RG-MAE-SmartHotel**. Enter **SmartHotelMigration** as the Migrate project name, and choose a geography close to you to store the migration assessment data. Then select **Create**.
 
 6. The Azure Migrate deployment will start. Once it has completed, you should see the **Azure Migrate: Server Assessment** and **Azure Migrate: Server Migration** panels for the current migration project.
 
@@ -192,83 +192,7 @@ For simplicity, there is no redundancy in any of the tiers.
 
 13. Take a few minutes to explore other aspects of the migration assessment.
 
-1. Return to the **Azure Migrate** blade in the Azure Portal, and select **Servers**. Under **Azure Migrate: Server Assessment** select **Groups**, then select the **SmartHotel VMs** group to see the group details. Note that each VM has their **Dependencies** status as **Requires agent installation**. Select **Requires agent installation** for the **smarthotelweb1** VM.
-
-2. On the **Dependencies** blade, select **Configure OMS workspace**.
-
-3. Create a new OMS workspace. Use **OMSW-SmartHotel\<unique number\>** as the workspace name, where \<unique number\> is a random number. Choose a workspace location close to your lab deployment, then select **Configure**.
-
-4. Wait for the workspace to be deployed. Once it is deployed, navigate to it and select **Agents management** under **Settings** on the left. Make a note of the **Workspace ID** and **Primary Key** (for example by using Notepad).
-
-5. Return to the Azure Migrate 'Dependencies' blade. Copy each of the 4 agent download URLs and paste them alongside the Workspace ID and key you noted in the previous step. 
-
-6. Return to the RDP session with the **SmartHotelHost**. In **Hyper-V Manager**, select **smarthotelweb1** and select **Connect**.
-
-7. Select **Connect** again when prompted and log in to the **Administrator** account using the password **demo!pass123**.
-
-8. Open **Internet Explorer**, and paste the link to the 64-bit Microsoft Monitoring Agent for Windows, which you noted earlier. When prompted, **Run** the installer.
-
-    > **Note:** You may need to disable **Internet Explorer Enhanced Security Configuration** on **Server Manager** under **Local Server** to complete the download. 
-
-9. Select through the installation wizard until you get to the **Agent Setup Options** page. From there, select **Connect the agent to Azure Log Analytics (OMS)** and select **Next**. Enter the Workspace ID and Workspace Key that you copied earlier, and select **Azure Commercial** from the Azure Cloud drop-down. Select through the remaining pages and install the agent.
-
-10. Paste the link to the Dependency Agent Windows installer into the browser address bar. **Run** the installer and select through the install wizard to complete the installation.
-
-11. Close the virtual machine connection window for the **smarthotelweb1** VM. Connect to the **smarthotelweb2** and **smarthotelSQL1** VMs and repeat the installation process for both agents.
-
-You will now deploy the Linux versions of the Microsoft Monitoring Agent and Dependency Agent on the **UbuntuWAF** VM. To do so, you will first connect to the UbuntuWAF remotely using an SSH session.
-
-12. Return to the RDP session with the **SmartHotelHost** and open a command prompt using the desktop shortcut.  
-
-13. Enter the following command to connect to the **UbuntuWAF** VM running in Hyper-V on the SmartHotelHost:
-
-    ```bash
-    ssh demouser@192.168.0.8
-    ```
-
-14. Enter 'yes' when prompted whether to connect. Use the password **demo!pass123**.
-
-15. Enter the following command, followed by the password **demo!pass123** when prompted:
-
-    ```s
-    sudo -s
-    ```
-
-    This gives the terminal session elevated privileges.
-
-16. Enter the following command, substituting \<Workspace ID\> and \<Workspace Key\> with the values copied previously. Answer **<Yes>** when prompted to restart services during package upgrades without asking. 
-
-    ```s
-    wget https://raw.githubusercontent.com/Microsoft/OMS-Agent-for-Linux/master/installer/scripts/onboard_agent.sh && sh onboard_agent.sh -w <Workspace ID> -s <Workspace Key>
-    ```
-
-17. Enter the following command, substituting \<Workspace ID\> with the value copied earlier:
-
-    ```s
-    /opt/microsoft/omsagent/bin/service_control restart <Workspace ID>
-    ```
-
-18. Enter the following command. This downloads a script that will install the Dependency Agent.
-
-    ```s
-    wget --content-disposition https://aka.ms/dependencyagentlinux -O InstallDependencyAgent-Linux64.bin
-    ```
-
-19. Install the dependency agent by running the script download in the previous step.
-
-    ```s
-    sh InstallDependencyAgent-Linux64.bin -s
-    ```
-
-20. The agent installation is now complete. Next, you need to generate some traffic on the SmartHotel application so the dependency visualization has some data to work with. Browse to the public IP address of the SmartHotelHost, and spend a few minutes refreshing the page and checking guests in and out.
- 
-1. Return to the Azure Portal and refresh the Azure Migrate **SmartHotel VMs** VM group blade. The 3 VMs on which the dependency agent was installed should now show their status as 'Installed'. (If not, refresh the page **using the browser refresh button**, not the refresh button in the blade.  It may take up to **5 minutes** after installation for the status to be updated.)
-
-2. Select **View dependencies**.
-
-3. Take a few minutes to explore the dependencies view. Expand each server to show the processes running on that server. Select a process to see process information. See which connections each server makes.
-
-## Lab #03 - Azure Migrate: Server Migration (60 minutes)
+## Exercise #03 - Azure Migrate: Server Migration (60 minutes)
 
 1. In the Azure portal's left navigation, select **+ Create a resource**, then search for and select **Storage account**, followed by **Create**.
 
@@ -276,9 +200,9 @@ You will now deploy the Linux versions of the Microsoft Monitoring Agent and Dep
 
     - Subscription: **Select your Azure subscription**.
   
-    - Resource group: (create new) **RG-SmartHotel**
+    - Resource group: (create new) **RG-MAE-SmartHotel**
   
-    - Storage account name: **sasmarthotelmigrate\[unique number\]**
+    - Storage account name: **samaesmarthotel\[unique number\]**
   
     - Location: **East US 2**
   
@@ -294,9 +218,9 @@ You will now deploy the Linux versions of the Microsoft Monitoring Agent and Dep
 
     - Subscription: **Select your Azure subscription**.
   
-    - Resource group: **RG-SmartHotel**
+    - Resource group: **RG-MAE-SmartHotel**
   
-    - Name: **VNET-SmartHotel**
+    - Name: **VNET-MAE-SmartHotel**
   
     - Region: **East US 2**
  
@@ -404,7 +328,7 @@ You will now deploy the Linux versions of the Microsoft Monitoring Agent and Dep
 
 5. **Wait** until all three **Planned failover** jobs show a **Status** of **Successful**. You should not need to refresh your browser. This could take up to 15 minutes.
 
-6. Navigate to the **RG-SmartHotel** resource group and check that the VM, network interface, and disk resources have been created for each of the virtual machines being migrated.
+6. Navigate to the **RG-MAE-SmartHotel** resource group and check that the VM, network interface, and disk resources have been created for each of the virtual machines being migrated.
 
 1. The application tier machine **smarthotelweb2** is configured to connect to the application database running on the **smarthotelsql** machine.
 
@@ -420,6 +344,6 @@ You will now deploy the Linux versions of the Microsoft Monitoring Agent and Dep
 
 5. Open a new browser tab and paste the IP address into the address bar. Verify that the SmartHotel360 application is now available in Azure.
 
-1. End of day and **Workshop Day 01**.
+1. End of Hands-on.
 
-1. Continue in the **Mentoria Arquiteto Cloud**.
+1. Continue in the **Treinamento Azure Expert**.

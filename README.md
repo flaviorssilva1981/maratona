@@ -172,7 +172,7 @@ For simplicity, there is no redundancy in any of the tiers.
 
 4. The **Assessment properties** blade allows you to tailor many of the settings used when making a migration assessment report. Take a few moments to explore the wide range of assessment properties. Hover over the information icons to see more details on each setting. Choose any settings you like, then select **Save**. (You have to make a change for the Save button to be enabled; if you don't want to make any changes, just close the blade.)
  
-5. Select **Next** to move to the **Select machines to assess** tab. Choose **Create New** and enter the group name **SmartHotel VMs**. Select the **smarthotelweb1**, **smarthotelweb2**, **smarthotelSQL1** and **UbuntuWAF** VMs.
+5. Select **Next** to move to the **Select machines to assess** tab. Choose **Create New** and enter the group name **SmartHotel VMs**. Select the **smarthotelsql1**, **smarthotelweb1**, **smarthotelweb2** and **UbuntuWAF** VMs.
 
     **Note:** There is no need to include the **AzureMigrateAppliance** VMs in the assessment, since they will not be migrated to Azure. 
 
@@ -192,240 +192,7 @@ For simplicity, there is no redundancy in any of the tiers.
 
 13. Take a few minutes to explore other aspects of the migration assessment.
 
-## Exercise #03 - Database Server Migration (30~60 minutes)
-
-1. Open the Azure Cloud Shell by navigating to **https://shell.azure.com**. Log in using your Azure subscription credentials if prompted to do so, select a **PowerShell** session, and accept any prompts.
-
-2. Run the following command to register the **Microsoft.DataMigration** resource provider:
-   
-    ```PowerShell
-    Register-AzResourceProvider -ProviderNamespace Microsoft.DataMigration
-    ```
-    > **Note**: It may take several minutes for the resource provider to register. You can proceed to the next task without waiting for the registration to complete. You will not use the resource provider until task 3.
-    >
-    > You can check the status by running:
-
-    > ```PowerShell
-    > Get-AzResourceProvider -ProviderNamespace Microsoft.DataMigration | Select-Object ProviderNamespace, RegistrationState, ResourceTypes
-    > ```
-
-1. Open the Azure portal at https://portal.azure.com and log in using your subscription credentials if it's not still up.
-
-2. Expand the portal's left navigation by selecting **Show portal menu** in the top left then select **+ Create a resource**, then select **Databases**, then select **SQL Database**.
-
-3. The **Create SQL Database** blade opens, showing the **Basics** tab. Complete the form as follows:
-
-    - Subscription: **Select your subscription**.
-  
-    - Resource group: (create new) **RG-MAE-SmartHotelDB**
-  
-    - Database name: **smarthoteldb**
-  
-    - Server: Select **Create new** and fill in the New server blade as follows then select **OK**:
-  
-        - Server name: **samaesmarthoteldb\[unique number\]**
-  
-        - Server admin login: **demouser**
-  
-        - Password: **demo!pass123**
-  
-        - Location: **IMPORTANT: For most users, select the same region you used when you started your lab - this makes migration faster. If you are using an Azure Pass subscription, choose a different region to stay within the Total Regional vCPU limit.**
-
-    - Use SQL elastic pool: **No**
-  
-    - Compute + storage: **Standard S0**
-
-    > **Note**: To select the **Standard S0** database tier, select **Configure database**, then **Looking for basic, standard, premium?**, select **Standard** and select **Apply**.
-
-4. Select **Next: Networking >** to move to the **Networking** tab. Confirm that **No access** is selected.
-
-    > **Note**: We will configure private endpoints to access our database later in the lab.
-
-5. Select **Review + Create**, then select **Create** to create the database. Wait for the deployment to complete.
-
-2. In the Azure portal, expand the portal's left navigation and select **+ Create a resource**, search for **Migration**, and then select **Azure Database Migration Service** from the drop-down list.
-
-3. On the **Azure Database Migration Service** blade, select **Create**.
-
- 4. In the **Create Migration Service** blade, on the **Basics** tab, enter the following values:
-   
-    - Subscription: **Select your Azure subscription**.
-  
-    - Resource group: **RG-MAE-Migration**
-  
-    - Service Name: **SmartHotelDBMigration**
-  
-    - Location: **East US 2**.
-
-    - Service mode: **Azure**
-  
-    - Pricing tier: **Standard: 1 vCore**
-
-5. Select **Next: Networking** to move to the **Networking** tab, and select the **DMSvnet/DMS** virtual network and subnet in the **SmartHotelHostRG** resource group.
-   
-6. Select **Review + create**, followed by **Create**.
-
-> **Note**: Creating a new migration service can take around 20 minutes. You can continue to the next task without waiting for the operation to complete.
-
-1. Return to the **Azure Migrate** blade in the Azure portal. Select the **Overview** panel, then select **Assess and migrate databases**.
-
-2. Under **Assessment tools**, select the link to add a tool, then select **Azure Migrate: Database Assessment**, then select **Next**.
-
-3. Under **Migration tool**, select the link to add a tool, then select **Azure Migrate: Database Migration**, then select **Next**.
-
-4. Once the tools are installed in Azure Migrate, the portal should show the **Azure Migrate - Databases** blade. Under **Azure Migrate: Database Assessment** select **+ Assess**.
-
-5. Select **Download** to open the Data Migration Assistant download page. Copy the page URL to the clipboard.
-
-6. Return to your remote desktop session with the **SmartHotelHost** VM. Open **Chrome** from the desktop and paste the Data Migration Assistant download URL into the address bar. Download and install the Data Migration Assistant, but do not launch it yet.
-
-7.  From within **SmartHotelHost**, open **Windows Explorer** and navigate to the **C:\\Program Files\\Microsoft Data Migration Assistant** folder. Open the **Dma.exe.config** file using Notepad. Search for **AzureMigrate** and remove the **\<\!--** and **--\>** around the line setting the **EnableAssessmentUploadToAzureMigrate** key. **Save** the file and close Notepad when done.
-
-8.  From within **SmartHotelHost** launch **Microsoft Data Migration Assistant** using the desktop icon. 
-
-9.  In the Data Migration Assistant, select the **+ New** icon.  Fill in the project details as follows:
-
-    - Project type: **Assessment**
-  
-    - Project name: **SmartHotelAssessment**
-  
-    - Assessment type: **Database Engine**
-  
-    - Source server type: **SQL Server**
-  
-    - Target server type: **Azure SQL Database**
-     
-10. Select **Create** to create the project.
-
-11. On the **Options** tab select **Next**.
-
-12. On the **Select sources** page, in the **Connect to a server** dialog box, provide the connection details to the SQL Server, and then select **Connect**.
-
-    - Server name: **192.168.0.6**
-  
-    - Authentication type: **SQL Server Authentication**
-  
-    - Username: **sa**
-  
-    - Password: **demo!pass123**
-  
-    - Encrypt connection: **Checked**
-  
-    - Trust server certificate: **Checked**
-
-13. In the **Add sources** dialog box, select **SmartHotel.Registration**, then select **Add**.
-
-14. Select **Start Assessment** to start the assessment. 
- 
-15. **Wait** for the assessment to complete, and review the results. The results should show two unsupported features, **Service Broker feature is not supported in Azure SQL Database** and **Azure SQL Database does not support EKM and Azure Key Vault integration**. For this migration, you can ignore these issues.
-
-16. Select **Upload to Azure Migrate** to upload the database assessment to your Azure Migrate project (this button may take a few seconds to become enabled).
-
-17. Select **Azure** from the dropdown on the right then select **Connect**. Enter your subscription credentials when prompted. Select your **Subscription** and **Azure Migrate Project** using the dropdowns, then select **Upload**. Once the upload is complete, select **OK** to dismiss the notification.
-
-18. Minimize the remote desktop window and return to the **Azure Migrate - Databases** blade in the Azure portal. Refreshing the page should now show the assessed database.
-
-1. In the Azure portal, navigate to the **RG-MAE-SmartHotelDB** resource group, and then to the database server.
-
-2. Select **Private endpoint connections** under **Security**, then **+ Private endpoint**.
-
-3. On the **Basics** tab that appears, enter the following configuration then select **Next: Resource**. 
-
-    - Resource group: **RG-MAE-Migration**
-  
-    - Name: **SmartHotel-DB-for-DMS**
-  
-    - Region: **Select the same location as the DMSvnet (Should be the region closest to you)**.
-  
-  4. On the **Resource** tab, entering the following configuration then select **Next: Configuration**. 
-
-    - Connection method: **Connect to an Azure resource in my directory**.
-  
-    - Subscription: **Select your subscription**.
-  
-    - Resource type: **Microsoft.Sql/servers**
-  
-    - Resource: **Your SQL database server name**.
-  
-    - Target sub-resource: **sqlServer**
-  
-5. On the **Configuration** tab enter the following configuration then select **Review + create**, then **Create**.
-
-    - Virtual network: **DMSvnet**
-  
-    - Subnet: **DMS (10.1.0.0/24)**
-  
-    - Integrate with private DNS zone: **No**
-  
-8. Check that the Database Migration Service resource completed provisioning.
-
-9. Navigate to the Database Migration Service resource blade in the **RG-MAE-Migrate** resource group and select **+ New Migration Project**.
-
-10. the **New migration project** blade, enter **DBMigrate** as the project name. Leave the source server type as **SQL Server** and target server type as **Azure SQL Database**. Select **Choose type of activity** and select **Create project only**. Select **Save** then select **Create**.
-
-11. The Migration Wizard opens, showing the **Select source** step. Complete the settings as follows, then select **Next: Select databases**.
-
-    - Source SQL Server instance name: **10.0.0.4**
-  
-    - Authentication type: **SQL Authentication**
-  
-    - User Name: **sa**
-  
-    - Password: **demo!pass123**
-
-    - Encryption connection: **Checked**
-  
-    - Trust server certificate: **Checked**
-
-12. In the **Select databases** step, the **Smarthotel.Registration** database should already be selected. Select **Next: Select target**.
-
-13. Complete the **Select target** step as follows, then select **Next: Summary**:
-
-    - Target server name: **Value from your database, {something}.database.windows.net**.
-  
-    - Authentication type: **SQL Authentication**
-  
-    - User Name: **demouser**
-  
-    - Password: **demo!pass123**
-  
-    - Encrypt connection: **Checked**
-
-    > **Note**: You can find the target server name in the Azure portal by browsing to your database.
-
-14. At the **Project summary** step, review the settings and select **Save project** to create the migration project.
-
-1. In the Azure portal should show a blade for the DBMigrate DMS project. Select **+ New Activity** and select **Schema only migration** from the drop-down.
-
-2. The Migration Wizard is shown. Most settings are already populated from the existing migration project. At the **Select source** step, re-enter the source database password **demo!pass123**, then select **Next: Select target**.
-
-3. At the **Select target** step, enter the password **demo!pass123** and select **Next: Select database and schema**.
-
-4. At the **Select database and schema** step, check that the **SmartHotel.Registration** database is selected. Under **Target Database** select **smarthoteldb** and under **Schema Source** select **Generate from source**. Select **Next: Summary**.
-
-5. At the **Summary** step, enter **SchemaMigration** as the **Activity name**. Select **Start migration** to start the schema migration process.
-
-6. The schema migration will begin. Select the **Refresh** button and watch the migration progress, until it shows as **Completed**.
-
-1. Return to the Azure portal blade for your **DBMigrate** migration project in DMS. Select **+ New Activity** and select **Offline data migration** from the drop-down.
-
-2. The Migration Wizard is shown. Most settings are already populated from the existing migration project. At the **Select source** step, re-enter the source database password **demo!pass123**, then select **Next: Select target**.
-
- 3. At the **Select target** step, enter the password **demo!pass123** and select **Next: Map to target databases**.
-
-4. At the **Map to target databases** step, check the **SmartHotel.Registration** database. Under **Target Database** select **smarthoteldb**. Select **Next: Configure migration settings**.
-
-5. The **Configure migration settings** step allows you to specify which tables should have their data migrated. Select the **Bookings** table (Make sure the **MigrationHistory** table is not checked) and select **Next: Summary**.
-
-6. At the **Migration summary** step, enter **DataMigration** as the **Activity name**. Select **Start migration**.
-
-7. The data migration will begin. Select the **Refresh** button and watch the migration progress, until it shows as **Completed**.
-
-8.  In the Azure portal, navigate to the **RG-MAE-SmartHotelDB** resource group, and then to the database server. Under **Security**, select **Private endpoint connections**.
-
-9.  Select the **SmartHotel-DB-for-DMS** endpoint added earlier, and select **Remove**, followed by **Yes**.
-
-## Exercise #04 - Application and Web Server Migration (60 minutes)
+## Exercise #04 - Server Migration (60 minutes)
 
 1. In the Azure portal's left navigation, select **+ Create a resource**, then search for and select **Storage account**, followed by **Create**.
 
@@ -455,8 +222,6 @@ For simplicity, there is no redundancy in any of the tiers.
   
     - Name: **VNET-MAE-SmartHotel**
   
-    - Region: **IMPORTANT: Select the same location as your Azure SQL Database**.
-  
 3. Select **Next: IP Addresses >**, and enter the following configuration. Then select **Review + create**, then **Create**.
 
     - IPv4 address space: **192.168.0.0/24** 
@@ -472,40 +237,6 @@ For simplicity, there is no redundancy in any of the tiers.
         - Subnet name: **SmartHotelDB**
    
         - Address range: **192.168.0.128/25**
-
-4. Navigate to the **RG-MAE-SmartHotelDB** resource group, and then to the database server. Under **Security**, select **Private endpoint connections**, then select **+ Private endpoint**.
-
-5. On the **Basics** tab, enter the following configuration then select **Next: Resource**:
-
-    - Resource group: **RG-MAE-SmartHotelDB**
-  
-    - Name: **SmartHotel-DB-Endpoint**
-  
-    - Region: **Select the same location as the VNET**.
-
-6.  On the **Resource** tab, enter the following configuration then select **Next: Configuration**:
-
-    - Connection method: **Connect to an Azure resource in my directory**.
-  
-    - Subscription: **Select your subscription**.
-  
-    - Resource type: **Microsoft.Sql/servers**
-  
-    - Resource: **Your SQL database server**.
-  
-    - Target sub-resource: **sqlServer**
- 
-7.  On the **Configuration** tab, enter the following configuration then select **Review + Create** then **Create**:
-
-    - Virtual network: **VNET-MAE-SmartHotel**
-  
-    - Subnet: **SmartHotelDB (192.168.0.128/25)**
-  
-    - Integrate with private DNS zone: **Yes**
-  
-    - Private DNS zone: (default) **privatelink.database.windows.net**
-
-8. **Wait** for the deployment to complete. Open the Private Endpoint blade, and note that the FQDN for the endpoint is listed as **\<your database\>.database.windows.net**, with an internal IP address **192.168.0.132**.  
 
 1. Return to the **Azure Migrate** blade in the Azure Portal, and select **Servers** under **Migration goals** on the left. Under **Migration Tools**, select **Discover**.
 
@@ -549,7 +280,7 @@ For simplicity, there is no redundancy in any of the tiers.
 
 4. The **Virtual machines** tab should now show the virtual machines included in the assessment. Select the **UbuntuWAF**, **smarthotelweb1** and **smarthotelweb2** virtual machines, then select **Next**.
 
-5. In the **Target settings** tab, select your subscription and the existing **RG-SmartHotel** resource group. Under **Replication storage account** select the **sasmarthotelmigrate...** storage account and under **Virtual Network** select **VNET-MAE-Hub**. Under **Subnet** select **SmartHotel**. Select **Next**.
+5. In the **Target settings** tab, select your subscription and the existing **RG-SmartHotel** resource group. Under **Replication storage account** select the **samaesmarthotelmigrate...** storage account and under **Virtual Network** select **VNET-MAE-Hub**. Under **Subnet** select **SmartHotel**. Select **Next**.
 
     > **Note:** For simplicity, in this lab you will not configure the migrated VMs for high availability, since each application tier is implemented using a single VM.
 
@@ -561,7 +292,7 @@ For simplicity, there is no redundancy in any of the tiers.
 
 8. In the **Azure Migrate - Servers** blade, under **Azure Migrate: Server Migration**, select the **Overview** button.
 
-9. Confirm that the 3 machines are replicating.
+9. Confirm that the 4 machines are replicating.
 
 10. Select **Replicating Machines** under **Manage** on the left.  Select **Refresh** occasionally and wait until all three machines have a **Protected** status, which shows the initial replication is complete. This will take several minutes.
 

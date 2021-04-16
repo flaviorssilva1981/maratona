@@ -160,7 +160,7 @@ For simplicity, there is no redundancy in any of the tiers.
 
 17. Wait for the Azure Migrate status to show **Discovery has been successfully initiated**. This will take several minutes. After the discovery has been successfully initiated, you can check the discovery status against each host/cluster in the table.
 
-18. Return to the **Azure Migrate** blade in the Azure portal.  Select **Servers**, then select **Refresh**.  Under **Azure Migrate: Server Assessment** you should see a count of the number of servers discovered so far. If discovery is still in progress, select **Refresh** periodically until 5 discovered servers are shown. This may take several minutes.
+18. Return to the **Azure Migrate** blade in the Azure portal. Select **Servers**, then select **Refresh**. Under **Azure Migrate: Server Assessment** you should see a count of the number of servers discovered so far. If discovery is still in progress, select **Refresh** periodically until 5 discovered servers are shown. This may take several minutes.
 
     **Wait for the discovery process to complete before proceeding to the next Task**.
 
@@ -204,7 +204,7 @@ For simplicity, there is no redundancy in any of the tiers.
   
     - Storage account name: **samaesmarthotel\[unique number\]**
   
-    - Location: **East US 2**
+    - Location: **Brazil South**
   
     - Account kind: **Storage (general purpose v2)**.
   
@@ -212,29 +212,23 @@ For simplicity, there is no redundancy in any of the tiers.
 
 3. Select **Review + create**, then select **Create**.
 
-1. In the Azure portal's left navigation, select **+ Create a resource**, then select **Networking**, followed by **Virtual network**.
+1. In the Azure portal's left navigation, select **All services**, then select **Networking**, followed by **Virtual network**.
 
-2. In the **Create virtual network** blade, enter the following values:
+1. Select **VNET-MAE-Hub**,  and select **Address space** under **Settings** create a new address space, enter the following values:
 
-    - Subscription: **Select your Azure subscription**.
+    - Address space: **192.168.0.0/16**.
   
-    - Resource group: **RG-MAE-SmartHotel**
-  
-    - Name: **VNET-MAE-SmartHotel**
-  
-    - Region: **East US 2**
- 
-3. Select **Next: IP Addresses >**, and enter the following configuration. Then select **Review + create**, then **Create**.
+1. On the **Address space**, select **Save**.
 
-    - IPv4 address space: **192.168.0.0/16** 
-  
+3. Select **Subnets**, and enter the following configuration..
+    
     - Subnet: Select **Add subnet** and enter the following then select **Add**
 
         - Subnet name: **SmartHotel**
    
         - Address range: **192.168.0.0/24**
    
-7.  On the **Configuration** tab, enter the following configuration then select **Review + Create** then **Create**.
+7.  On the **Add subnet**, select **Save**.
 
 8. **Wait** for the deployment to complete.
 

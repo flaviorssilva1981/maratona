@@ -344,4 +344,4 @@ For simplicity, there is no redundancy in any of the tiers.
 
 1. End of Hands-on.
 
-1. Continue in the **Treinamento Azure Expert**.
+1. Continue in the **Treinamento Azure Expert2021**.
